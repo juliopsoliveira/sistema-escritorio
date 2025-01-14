@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { NavBar } from "@/components/NavBar";
 
 const Index = () => {
   const { toast } = useToast();
@@ -42,6 +43,7 @@ const Index = () => {
 
   return (
     <div className="container mx-auto p-4">
+      <NavBar />
       <h1 className="text-2xl font-bold mb-6">Sistema de Gestão Jurídica</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
