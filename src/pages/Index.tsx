@@ -1,19 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "../lib/supabase";
+import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-
-interface Case {
-  id: number;
-  client_name: string;
-  case_number: string;
-  description: string;
-  status: string;
-  created_at: string;
-}
 
 const Index = () => {
   const { toast } = useToast();
@@ -24,43 +13,9 @@ const Index = () => {
     status: "Em andamento"
   });
 
-  const { data: cases, isLoading, refetch } = useQuery({
-    queryKey: ["cases"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("cases")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        toast({
-          title: "Erro ao carregar casos",
-          description: error.message,
-          variant: "destructive",
-        });
-        return [];
-      }
-
-      return data as Case[];
-    },
-  });
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const { error } = await supabase
-      .from("cases")
-      .insert([newCase]);
-
-    if (error) {
-      toast({
-        title: "Erro ao criar caso",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-
     toast({
       title: "Caso criado com sucesso",
       description: "O novo caso foi adicionado ao sistema.",
@@ -72,9 +27,18 @@ const Index = () => {
       description: "",
       status: "Em andamento"
     });
-
-    refetch();
   };
+
+  const mockCases = [
+    {
+      id: 1,
+      client_name: "João Silva",
+      case_number: "2024/001",
+      description: "Processo trabalhista",
+      status: "Em andamento",
+      created_at: new Date().toISOString()
+    }
+  ];
 
   return (
     <div className="container mx-auto p-4">
@@ -132,27 +96,23 @@ const Index = () => {
             <CardTitle>Casos Ativos</CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
-              <p>Carregando...</p>
-            ) : (
-              <div className="space-y-4">
-                {cases?.map((case_) => (
-                  <div
-                    key={case_.id}
-                    className="p-4 border rounded-lg hover:bg-accent"
-                  >
-                    <h3 className="font-semibold">{case_.client_name}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Processo: {case_.case_number}
-                    </p>
-                    <p className="text-sm">{case_.description}</p>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Status: {case_.status}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className="space-y-4">
+              {mockCases.map((case_) => (
+                <div
+                  key={case_.id}
+                  className="p-4 border rounded-lg hover:bg-accent"
+                >
+                  <h3 className="font-semibold">{case_.client_name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Processo: {case_.case_number}
+                  </p>
+                  <p className="text-sm">{case_.description}</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Status: {case_.status}
+                  </p>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
